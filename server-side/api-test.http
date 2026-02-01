@@ -1,0 +1,401 @@
+### Task Management API Testing
+### Use with REST Client extension in VS Code
+
+@baseUrl = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkZDgzNWYxNy1jN2NhLTRiMzYtOWIwZi05NGIxMDhlYTRmMjEiLCJpYXQiOjE3Njk5NTYyOTEsImV4cCI6MTc3MDU2MTA5MX0.90AJksNZV_H9L88RdIY5qrabMgAvHGGi55RtbPv2l28
+@taskListId = 
+@taskId = 
+@shareId = 
+
+### Health Check
+GET {{baseUrl}}
+
+###############################################
+### AUTHENTICATION
+###############################################
+
+### 1. Register First User (John)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+### 2. Register Second User (Jane)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "jane@example.com",
+  "password": "password123"
+}
+
+### 3. Login as John
+# @name loginJohn
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+### 4. Login as Jane
+# @name loginJane
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "jane@example.com",
+  "password": "password123"
+}
+
+###############################################
+### TASK LISTS
+###############################################
+
+### 5. Get All Task Lists
+GET {{baseUrl}}/api/tasklists
+Authorization: Bearer {{token}}
+
+### 6. Create Task List
+# @name createTaskList
+POST {{baseUrl}}/api/tasklists
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "My Project Tasks"
+}
+
+### 7. Create Another Task List
+POST {{baseUrl}}/api/tasklists
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Personal Tasks"
+}
+
+### 8. Get Specific Task List
+GET {{baseUrl}}/api/tasklists/{{taskListId}}
+Authorization: Bearer {{token}}
+
+### 9. Update Task List
+PUT {{baseUrl}}/api/tasklists/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Updated Project Tasks"
+}
+
+### 10. Delete Task List
+DELETE {{baseUrl}}/api/tasklists/{{taskListId}}
+Authorization: Bearer {{token}}
+
+###############################################
+### TASKS
+###############################################
+
+### 11. Get All Tasks in Task List
+GET {{baseUrl}}/api/tasks/{{taskListId}}
+Authorization: Bearer {{token}}
+
+### 12. Create Task (Pending)
+# @name createTask
+POST {{baseUrl}}/api/tasks/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Complete API documentation",
+  "description": "Write comprehensive docs for all endpoints",
+  "status": "pending"
+}
+
+### 13. Create Task (In Progress)
+POST {{baseUrl}}/api/tasks/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Implement authentication",
+  "description": "Add JWT-based authentication",
+  "status": "in_progress"
+}
+
+### 14. Create Task (Completed)
+POST {{baseUrl}}/api/tasks/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Setup project structure",
+  "description": "Initialize Express and Prisma",
+  "status": "completed"
+}
+
+### 15. Create Task (No Description)
+POST {{baseUrl}}/api/tasks/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Quick task without description"
+}
+
+### 16. Update Task (Full Update)
+PUT {{baseUrl}}/api/tasks/{{taskListId}}/{{taskId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Updated task title",
+  "description": "Updated task description",
+  "status": "in_progress"
+}
+
+### 17. Update Task (Partial Update)
+PUT {{baseUrl}}/api/tasks/{{taskListId}}/{{taskId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Only updating the title"
+}
+
+### 18. Update Task Status to In Progress
+PATCH {{baseUrl}}/api/tasks/{{taskListId}}/{{taskId}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "in_progress"
+}
+
+### 19. Update Task Status to Completed
+PATCH {{baseUrl}}/api/tasks/{{taskListId}}/{{taskId}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "completed"
+}
+
+### 20. Update Task Status to Pending
+PATCH {{baseUrl}}/api/tasks/{{taskListId}}/{{taskId}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "pending"
+}
+
+### 21. Delete Task
+DELETE {{baseUrl}}/api/tasks/{{taskListId}}/{{taskId}}
+Authorization: Bearer {{token}}
+
+###############################################
+### SHARING
+###############################################
+
+### 22. Share Task List with Edit Permission
+# @name createShare
+POST {{baseUrl}}/api/shares/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "jane@example.com",
+  "permission": "edit"
+}
+
+### 23. Share Task List with View Permission
+POST {{baseUrl}}/api/shares/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "jane@example.com",
+  "permission": "view"
+}
+
+### 24. Get All Shared Users for Task List
+GET {{baseUrl}}/api/shares/{{taskListId}}
+Authorization: Bearer {{token}}
+
+### 25. Update Share Permission to View
+PUT {{baseUrl}}/api/shares/{{taskListId}}/{{shareId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "permission": "view"
+}
+
+### 26. Update Share Permission to Edit
+PUT {{baseUrl}}/api/shares/{{taskListId}}/{{shareId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "permission": "edit"
+}
+
+### 27. Remove Share Access
+DELETE {{baseUrl}}/api/shares/{{taskListId}}/{{shareId}}
+Authorization: Bearer {{token}}
+
+###############################################
+### ERROR SCENARIOS
+###############################################
+
+### 28. Try to access without token (401 Error)
+GET {{baseUrl}}/api/tasklists
+
+### 29. Try to register with invalid email (400 Error)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "password123"
+}
+
+### 30. Try to register with short password (400 Error)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "123"
+}
+
+### 31. Try to login with wrong credentials (401 Error)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "wrongpassword"
+}
+
+### 32. Try to create task without title (400 Error)
+POST {{baseUrl}}/api/tasks/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Task without title"
+}
+
+### 33. Try to create task with invalid status (400 Error)
+POST {{baseUrl}}/api/tasks/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Task with invalid status",
+  "status": "invalid_status"
+}
+
+### 34. Try to share with non-existent user (404 Error)
+POST {{baseUrl}}/api/shares/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "nonexistent@example.com",
+  "permission": "edit"
+}
+
+### 35. Try to access non-existent task list (404 Error)
+GET {{baseUrl}}/api/tasklists/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+###############################################
+### PERMISSION TESTING WORKFLOW
+###############################################
+
+### Step 1: Login as John (Owner) and copy token
+# Copy the token to @token variable
+
+### Step 2: Create a task list as John
+# Copy the taskListId to @taskListId variable
+
+### Step 3: Add tasks to the list as John
+
+### Step 4: Share with Jane with "edit" permission
+
+### Step 5: Login as Jane and copy her token
+# Replace @token with Jane's token
+
+### Step 6: Try to view the shared task list as Jane (should work)
+GET {{baseUrl}}/api/tasklists/{{taskListId}}
+Authorization: Bearer {{token}}
+
+### Step 7: Try to add a task as Jane (should work with edit permission)
+POST {{baseUrl}}/api/tasks/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Task added by Jane",
+  "description": "Testing edit permission"
+}
+
+### Step 8: Login as John again (switch token back)
+# Replace @token with John's token
+
+### Step 9: Update Jane's permission to "view"
+PUT {{baseUrl}}/api/shares/{{taskListId}}/{{shareId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "permission": "view"
+}
+
+### Step 10: Login as Jane again
+# Replace @token with Jane's token
+
+### Step 11: Try to add a task as Jane (should fail with view permission)
+POST {{baseUrl}}/api/tasks/{{taskListId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "This should fail",
+  "description": "Jane only has view permission now"
+}
+
+### Step 12: Try to delete task list as Jane (should fail - not owner)
+DELETE {{baseUrl}}/api/tasklists/{{taskListId}}
+Authorization: Bearer {{token}}
+
+###############################################
+### INSTRUCTIONS
+###############################################
+
+# HOW TO USE THIS FILE:
+# 
+# 1. Install "REST Client" extension in VS Code
+# 2. Update the @token, @taskListId, @taskId, @shareId variables after each request
+# 3. Click "Send Request" above any ### line to execute the request
+# 4. View responses in the right panel
+#
+# TIP: You can use response values automatically:
+#   After a request with # @name, you can reference response data like:
+#   {{loginJohn.response.body.token}}
+#   {{createTaskList.response.body.taskList.id}}
+#
+# WORKFLOW:
+# 1. Register users (requests 1-2)
+# 2. Login and save tokens (requests 3-4)
+# 3. Create task lists (requests 6-7)
+# 4. Add tasks (requests 12-15)
+# 5. Test sharing (requests 22-27)
+# 6. Test permissions (see Permission Testing Workflow section)

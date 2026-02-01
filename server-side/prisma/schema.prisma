@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  ownedTaskLists  TaskList[]
+  sharedTaskLists TaskListShare[]
+
+  @@map("users")
+}
+
+model TaskList {
+  id        String   @id @default(uuid())
+  title     String
+  ownerId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  owner  User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tasks  Task[]
+  shares TaskListShare[]
+
+  @@map("task_lists")
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("pending") // pending, in_progress, completed
+  taskListId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  taskList TaskList @relation(fields: [taskListId], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+model TaskListShare {
+  id         String   @id @default(uuid())
+  taskListId String
+  userId     String
+  permission String   // view, edit
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  taskList TaskList @relation(fields: [taskListId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Ensure a user can only have one share entry per task list
+  @@unique([taskListId, userId])
+  @@map("task_list_shares")
+}
